@@ -1,0 +1,11 @@
+pytest
+pytest-bdd
+pytest-xdist
+pytest-html
+allure-pytest
+playwright
+requests
+httpx
+sqlalchemy
+psycopg2-binary
+python-dotenv
