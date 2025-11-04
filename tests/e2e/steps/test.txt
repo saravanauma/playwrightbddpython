@@ -1,6 +1,0 @@
-Code
-execute
-Test
-UAT
-Function
-Integration

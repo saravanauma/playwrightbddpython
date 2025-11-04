@@ -1,0 +1,1 @@
+2025-10-30 13:22:46,214 INFO [playwrightbdd] Saved screenshot: reports/screenshots/test_auth_login_passed_20251030_132245.png

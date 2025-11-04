@@ -1,0 +1,4 @@
+[32mINFO    [0m playwrightbdd:test_auth_login_steps.py:16 Step: Navigating to the login page (https://prestaging.app.dals.co.uk//login)
+[32mINFO    [0m playwrightbdd:test_auth_login_steps.py:23 Step: Logging in with credentials (username: saravanakumar@mallow-tech.com)
+[32mINFO    [0m playwrightbdd:test_auth_login_steps.py:27 Login submitted, waiting for network idle...
+[32mINFO    [0m playwrightbdd:test_auth_login_steps.py:10 Starting scenario: login to the application

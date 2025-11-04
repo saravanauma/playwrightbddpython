@@ -1,31 +1,15 @@
 import pytest
 from playwright.sync_api import sync_playwright
 from tests.utils.config import PLAYWRIGHT_CONFIG, REPORT_PATH
-import os
-import sys
-import subprocess
+from tests.utils.logger import logger, init_logging  # new
+from tests.utils.screenshot import take_screenshot as _take_screenshot
+from tests.db.fixtures import db_connection, db_cursor
+from tests.utils.logger import logger
 from datetime import datetime
 from pathlib import Path
 
-
-def ensure_playwright_browsers():
-    """Ensure required Playwright browsers are installed."""
-    try:
-        result = subprocess.run(
-            ["playwright", "install", "chromium"],
-            capture_output=True,
-            text=True,
-            check=True,
-        )
-        print("✓ Playwright browsers installed successfully")
-        return True
-    except subprocess.CalledProcessError as e:
-        print(f"Error installing browsers: {e.stderr}")
-        return False
-    except FileNotFoundError:
-        print("playwright not found in PATH. Installing browsers may require:")
-        print("    playwright install")
-        return False
+init_logging()
+logger.debug("conftest loaded; REPORT_PATH=%s", REPORT_PATH)
 
 
 # Create directories for storing screenshots and videos
@@ -39,29 +23,27 @@ def get_timestamp():
     return datetime.now().strftime("%Y%m%d_%H%M%S")
 
 
+"""
+Database test configuration and fixtures.
+Import and expose fixtures from fixtures.py to make them available to all tests.
+"""
+
+# Import and expose the fixtures (this makes them available to pytest)
+__all__ = ['db_connection', 'db_cursor']
+
+# Log DB test configuration on import
+logger.info("Database test configuration loaded")
+
+
 @pytest.fixture(scope="session")
 def browser():
     with sync_playwright() as p:
-        try:
-            browser = p.chromium.launch(
-                headless=PLAYWRIGHT_CONFIG['headless'],
-                slow_mo=PLAYWRIGHT_CONFIG['slow_mo']
-            )
-            yield browser
-            browser.close()
-        except Exception as e:
-            if "Executable doesn't exist" in str(e):
-                if ensure_playwright_browsers():
-                    # Retry browser launch after installation
-                    browser = p.chromium.launch(
-                        headless=PLAYWRIGHT_CONFIG['headless'],
-                        slow_mo=PLAYWRIGHT_CONFIG['slow_mo']
-                    )
-                    yield browser
-                    browser.close()
-                else:
-                    pytest.skip(
-                        "Playwright browsers not installed. Run: playwright install")
+
+        browser = p.chromium.launch(
+            headless=PLAYWRIGHT_CONFIG['headless'],
+            slow_mo=PLAYWRIGHT_CONFIG['slow_mo'])
+        yield browser
+        browser.close()
 
 
 @pytest.fixture
@@ -75,72 +57,71 @@ def page(browser, request):
 
     # Create new page
     page = context.new_page()
+    # Store page and context on request.node for access in hooks
+    request.node._pw_page = page
+    request.node._pw_context = context
 
     yield page
-
-    # Take screenshot on test failure
-    if request.node.rep_call.failed:
-        screenshot_path = SCREENSHOTS_DIR / \
-            f"{request.node.name}_{get_timestamp()}_failed.png"
-        page.screenshot(path=str(screenshot_path))
 
     # Close context (this will automatically save the video)
     context.close()
 
 
-@pytest.hookimpl(hookwrapper=True)
-def pytest_runtest_makereport(item, call):
-    outcome = yield
-    rep = outcome.get_result()
-    setattr(item, f"rep_{rep.when}", rep)
+@pytest.fixture
+def take_screenshot(request):
+    """Fixture that provides the `take_screenshot(page, name=None, full_page=False)` helper.
 
-# Add metadata to pytest-html report
-
-
-def pytest_configure(config):
-    if config.pluginmanager.hasplugin("html"):
-        config._metadata = getattr(config, "_metadata", {})
-        config._metadata["Project Name"] = "Flipkart Automation Framework"
-        config._metadata["Framework"] = "Playwright + Pytest + BDD"
-        config._metadata["Author"] = "Saravanakumar Veluchamy"
-        config._metadata["Environment"] = "QA"
-
-        # Add screenshot and video paths to report
-        config._metadata["Screenshots"] = str(SCREENSHOTS_DIR)
-        config._metadata["Videos"] = str(VIDEOS_DIR)
+    Usage in tests/steps/pages:
+        def test_example(page, take_screenshot):
+            take_screenshot(page, name="my_step")
+    """
+    return _take_screenshot
 
 
 def pytest_html_report_title(report):
-    report.title = "Flipkart Automation Test Report"
+    report.title = "Test Automation Test Report"
 
-# Helper function to attach screenshots and videos to allure report
+# Unified pytest_runtest_makereport: attach screenshot and video to Allure for each test
 
 
 @pytest.hookimpl(hookwrapper=True)
 def pytest_runtest_makereport(item, call):
     outcome = yield
     report = outcome.get_result()
+    setattr(item, f"rep_{report.when}", report)
 
+    # Only attach artifacts after test call phase
     if report.when == "call":
+        # Attach screenshot to Allure (if available and page exists)
+        page = getattr(item, "_pw_page", None)
         try:
-            # If allure is available, attach screenshots and videos
             import allure
-            if report.failed:
-                screenshot_path = SCREENSHOTS_DIR / \
-                    f"{item.name}_{get_timestamp()}_failed.png"
-                if screenshot_path.exists():
-                    allure.attach.file(
-                        str(screenshot_path),
-                        name="Screenshot",
-                        attachment_type=allure.attachment_type.PNG
-                    )
-
-            video_path = VIDEOS_DIR / f"{item.name}_{get_timestamp()}.webm"
-            if video_path.exists():
+            if page is not None:
+                result = "failed" if report.failed else "passed"
+                # Take screenshot and attach to Allure
+                from tests.utils.screenshot import take_screenshot as _take_screenshot
+                screenshot_path = _take_screenshot(
+                    page, name=f"{item.name}_{result}", attach=False)
                 allure.attach.file(
-                    str(video_path),
-                    name="Video",
-                    attachment_type=allure.attachment_type.WEBM
+                    str(screenshot_path),
+                    name=f"Screenshot ({result})",
+                    attachment_type=allure.attachment_type.PNG
                 )
+            # Attach video if available
+            context = getattr(item, "_pw_context", None)
+            if context is not None:
+                # Playwright saves video to record_video_dir, but need to get the path from the page
+                try:
+                    video = None
+                    if page is not None and hasattr(page, "video") and page.video:
+                        video = page.video.path()
+                    if video and Path(video).exists():
+                        allure.attach.file(
+                            str(video),
+                            name="Video",
+                            attachment_type=allure.attachment_type.WEBM
+                        )
+                except Exception:
+                    pass
         except ImportError:
             pass  # Allure not installed, skip attachments

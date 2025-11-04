@@ -1,0 +1,5 @@
+2025-10-30 13:36:32,536 INFO [playwrightbdd] Step: Navigating to the login page (https://prestaging.app.dals.co.uk//login)
+2025-10-30 13:36:51,682 INFO [playwrightbdd] Step: Logging in with credentials (username: saravanakumar@mallow-tech.com)
+2025-10-30 13:36:51,781 INFO [playwrightbdd] Login submitted, waiting for network idle...
+2025-10-30 13:36:51,782 INFO [playwrightbdd] Starting scenario: login to the application
+2025-10-30 13:36:51,857 INFO [playwrightbdd] Saved screenshot: reports/screenshots/test_auth_login_passed_20251030_133651.png

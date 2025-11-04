@@ -1,0 +1,28 @@
+2025-10-30 10:50:05,479 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 10:50:05,480 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 11:03:40,131 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 11:03:40,132 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 11:26:08,848 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 11:26:08,849 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 11:29:42,834 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 11:29:42,835 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 11:31:35,123 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 11:31:35,123 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 13:15:02,575 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 13:15:02,575 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 13:22:22,654 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 13:22:22,654 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 13:22:46,214 INFO [playwrightbdd] Saved screenshot: reports/screenshots/test_auth_login_passed_20251030_132245.png
+2025-10-30 13:36:28,927 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 13:36:28,928 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 13:36:32,536 INFO [playwrightbdd] Step: Navigating to the login page (https://prestaging.app.dals.co.uk//login)
+2025-10-30 13:36:51,682 INFO [playwrightbdd] Step: Logging in with credentials (username: saravanakumar@mallow-tech.com)
+2025-10-30 13:36:51,781 INFO [playwrightbdd] Login submitted, waiting for network idle...
+2025-10-30 13:36:51,782 INFO [playwrightbdd] Starting scenario: login to the application
+2025-10-30 13:36:51,857 INFO [playwrightbdd] Saved screenshot: reports/screenshots/test_auth_login_passed_20251030_133651.png
+2025-10-30 14:02:28,517 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 14:02:28,517 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 14:09:20,652 INFO [playwrightbdd] Logger initialized. Log file: reports/logs/app.log
+2025-10-30 14:09:20,653 DEBUG [playwrightbdd] conftest loaded; REPORT_PATH=reports/
+2025-10-30 14:09:20,653 INFO [playwrightbdd] Database test configuration loaded
+2025-10-30 14:09:20,654 INFO [playwrightbdd] Database test configuration loaded

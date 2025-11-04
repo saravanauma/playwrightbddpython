@@ -154,16 +154,6 @@ def enter_credentials(page):
     page.auth.login()  # Uses env credentials
 ```
 
-pytest -n auto             # Use all CPU cores
-pytest -n 4                # Use 4 workers
-
-pytest -m "smoke"           # Run smoke tests
-pytest -m "regression"      # Run regression tests
-pytest tests/e2e/           # Run UI tests
-pytest tests/api/           # Run API tests
-pytest tests/db/            # Run DB tests
-pytest
-
 ## 🏃 Running Tests
 
 ### Parallel Execution
@@ -178,6 +168,8 @@ pytest -m "smoke"          # Run smoke tests
 pytest -m "regression"     # Run regression tests
 pytest tests/e2e/         # Run UI tests only
 pytest tests/api/         # Run API tests only
+pytest tests/db/            # Run DB tests
+pytest
 ```
 
 ### Test Selection

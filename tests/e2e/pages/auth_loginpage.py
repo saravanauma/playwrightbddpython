@@ -17,12 +17,15 @@ class auth_loginpage:
         self.page = page
 
         # Primary login elements
-        self.single_sign_on_button = page.get_by_role(
-            "button", name=" Single Sign On")
-        self.email_input = page.get_by_role("textbox", name="Enter email")
+        self.username_input = page.get_by_role(
+            "textbox", name="Enter email")  # Same as email_input
+        self.password_input = page.get_by_role(
+            "textbox", name="Enter password")
         self.login_button = page.locator('[aria-label="Login"]')
 
-        # Additional controls seen in the login flows
+        # SSO flow elements
+        self.single_sign_on_button = page.get_by_role(
+            "button", name=" Single Sign On")
         self.remember_checkbox = page.get_by_role(
             "checkbox", name="Remember me")
         self.no_sso_link = page.get_by_role(
@@ -49,29 +52,10 @@ class auth_loginpage:
                 "Username and password must be provided either as arguments or via environment variables (UI_USERNAME / UI_PASSWORD)."
             )
 
-        # Try to fill common username/email fields (resilient across variants)
-        try:
-            self.username_input.fill(username)
-        except Exception:
-            try:
-                self.email_input.fill(username)
-            except Exception:
-                self.page.fill('input[type="email"]', username)
-
-        # Fill password
-        try:
-            self.password_input.fill(password)
-        except Exception:
-            self.page.fill('input[type="password"]', password)
-
-        # Click login or sign-in
-        try:
-            self.login_button.click()
-        except Exception:
-            try:
-                self.signin_button.click()
-            except Exception:
-                self.page.click('button[type="submit"]')
+        self.username_input.fill(username)
+        # self.password_input.fill(password)
+        # self.login_button.click()
+        self.page.wait_for_load_state("networkidle")
 
     def non_sso_login_flow(self, username: str | None = None, password: str | None = None):
         username = username or DEFAULT_USERNAME
