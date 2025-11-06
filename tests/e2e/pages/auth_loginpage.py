@@ -38,7 +38,7 @@ class auth_loginpage:
         self.page.wait_for_load_state("networkidle")
 
     def login(self, username: str | None = None, password: str | None = None):
-        """Fill credentials and submit synchronously.
+        """Fill credentials and submit synchronously Test stageß.
 
         If username or password are omitted, fall back to values from environment
         (DEFAULT_USERNAME / DEFAULT_PASSWORD) configured in `tests.utils.config`.
